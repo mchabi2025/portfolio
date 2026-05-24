@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio — Designer UI/UX</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --ink: #0d0d0d;
+      --paper: #f5f2ec;
+      --accent: #c8a96e;
+      --accent-dark: #a8843e;
+      --muted: #7a7570;
+      --border: rgba(13,13,13,0.1);
+      --card-bg: #fff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+    }
+
+    /* ─── CURSOR ─────────────────────────────── */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    }
+    .cursor-ring {
+      width: 38px; height: 38px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform 0.18s ease, width 0.3s, height 0.3s;
+    }
+    body:hover .cursor { opacity: 1; }
+
+    /* ─── NAVBAR ─────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      padding: 1.2rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: transparent;
+      transition: background 0.4s, box-shadow 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(245,242,236,0.95);
+      box-shadow: 0 1px 0 var(--border);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 2px;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 1.5px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--ink);
+      color: var(--paper) !important;
+      padding: 0.5rem 1.2rem;
+      border-radius: 2px;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: var(--accent); color: var(--ink) !important; transition: background 0.2s; }
+
+    /* ─── HERO ───────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 7rem 0 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg-text {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(6rem, 18vw, 20rem);
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(13,13,13,0.05);
+      user-select: none;
+      white-space: nowrap;
+      pointer-events: none;
+      letter-spacing: -0.03em;
+    }
+    .hero-label {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    .hero-label::before {
+      content: '';
+      width: 2rem; height: 1px;
+      background: var(--accent);
+    }
+    .hero-title {
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent);
+      font-weight: 400;
+    }
+    .hero-desc {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 440px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+    .btn-primary-custom {
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 0.9rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: background 0.25s, transform 0.2s;
+    }
+    .btn-primary-custom:hover {
+      background: var(--accent);
+      color: var(--ink);
+      transform: translateY(-2px);
+    }
+    .btn-outline-custom {
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      padding: 0.85rem 2rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: background 0.25s, color 0.25s;
+    }
+    .btn-outline-custom:hover { background: var(--ink); color: var(--paper); }
+
+    .hero-stats {
+      display: flex; gap: 3rem;
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+    .stat-num span { color: var(--accent); }
+    .stat-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+    .hero-visual {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-card-mockup {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.12), 0 0 0 1px var(--border);
+      position: relative;
+      z-index: 2;
+    }
+    .mockup-header {
+      background: var(--ink);
+      padding: 1rem 1.4rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mockup-body { padding: 1.6rem; }
+    .mockup-ui-bar {
+      height: 8px; border-radius: 4px;
+      background: #f0ede8; margin-bottom: 0.7rem;
+    }
+    .mockup-ui-bar.accent { background: var(--accent); width: 60%; }
+    .mockup-ui-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 1rem;
+    }
+    .mockup-ui-card {
+      height: 70px; border-radius: 8px; background: #f8f6f2;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mockup-ui-card i { color: var(--accent); font-size: 1.4rem; }
+    .hero-badge {
+      position: absolute;
+      bottom: -1.5rem; right: -1.5rem;
+      background: var(--accent);
+      color: var(--ink);
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      box-shadow: 0 10px 30px rgba(200,169,110,0.4);
+      z-index: 3;
+      animation: spin-badge 12s linear infinite;
+    }
+    .hero-badge .big { font-size: 1.6rem; line-height: 1; }
+    .hero-badge .small { font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    @keyframes spin-badge {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .hero-badge-inner { animation: spin-badge-rev 12s linear infinite; text-align: center; }
+    @keyframes spin-badge-rev {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
+
+    /* ─── SECTION TITLES ─────────────────────── */
+    .section-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+    }
+    .section-eyebrow::before {
+      content: ''; width: 1.5rem; height: 1px; background: var(--accent);
+    }
+    .section-title {
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+    }
+    .section-title em { font-style: italic; color: var(--accent); font-weight: 400; }
+    .section-subtitle {
+      font-size: 1rem; color: var(--muted); line-height: 1.7; max-width: 520px;
+    }
+
+    /* ─── ABOUT ───────────────────────────────── */
+    #about { padding: 7rem 0; }
+    .about-text p {
+      font-size: 1.05rem; color: var(--muted);
+      line-height: 1.8; margin-bottom: 1.2rem;
+    }
+    .process-steps { margin-top: 2.5rem; }
+    .process-step {
+      display: flex; gap: 1.2rem;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .process-step:last-child { border-bottom: none; }
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      min-width: 2.5rem;
+      padding-top: 0.1rem;
+    }
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+    .step-desc { font-size: 0.85rem; color: var(--muted); }
+
+    /* ─── SERVICES ────────────────────────────── */
+    #services { padding: 7rem 0; background: var(--ink); }
+    #services .section-eyebrow { color: var(--accent); }
+    #services .section-eyebrow::before { background: var(--accent); }
+    #services .section-title { color: var(--paper); }
+    #services .section-subtitle { color: rgba(245,242,236,0.5); }
+    .service-card {
+      padding: 2rem;
+      border: 1px solid rgba(245,242,236,0.1);
+      border-radius: 4px;
+      height: 100%;
+      transition: border-color 0.3s, transform 0.3s, background 0.3s;
+      cursor: default;
+    }
+    .service-card:hover {
+      border-color: var(--accent);
+      background: rgba(200,169,110,0.05);
+      transform: translateY(-4px);
+    }
+    .service-icon {
+      width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(200,169,110,0.15);
+      border-radius: 8px;
+      margin-bottom: 1.4rem;
+    }
+    .service-icon i { color: var(--accent); font-size: 1.2rem; }
+    .service-card h5 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      color: var(--paper);
+      margin-bottom: 0.7rem;
+    }
+    .service-card p { font-size: 0.85rem; color: rgba(245,242,236,0.5); line-height: 1.7; }
+
+    /* ─── CASE STUDIES ────────────────────────── */
+    #cases { padding: 7rem 0; }
+    .case-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: box-shadow 0.3s, transform 0.3s;
+      height: 100%;
+    }
+    .case-card:hover {
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      transform: translateY(-6px);
+    }
+    .case-visual {
+      height: 200px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .case-visual::before {
+      content: '';
+      position: absolute; inset: 0;
+      opacity: 0.08;
+    }
+    .case-v1 { background: linear-gradient(135deg, #0d0d0d, #2a2a2a); }
+    .case-v2 { background: linear-gradient(135deg, #c8a96e, #a8843e); }
+    .case-v3 { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+    .case-body { padding: 1.8rem; }
+    .case-tag {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(200,169,110,0.12);
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+    .case-body h4 {
+      font-size: 1.2rem; font-weight: 700;
+      margin-bottom: 0.8rem; line-height: 1.3;
+    }
+    .case-body p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.4rem; }
+    .case-results {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border);
+    }
+    .result-pill {
+      font-size: 0.75rem; font-weight: 500;
+      background: var(--paper);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      color: var(--ink);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .result-pill i { color: var(--accent); font-size: 0.7rem; }
+
+    /* ─── CONTACT ─────────────────────────────── */
+    #contact { padding: 7rem 0; background: var(--ink); }
+    #contact .section-title { color: var(--paper); }
+    #contact .section-subtitle { color: rgba(245,242,236,0.5); }
+    .contact-form-wrap {
+      background: rgba(245,242,236,0.04);
+      border: 1px solid rgba(245,242,236,0.1);
+      border-radius: 8px;
+      padding: 2.5rem;
+    }
+    .form-label { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(245,242,236,0.6); margin-bottom: 0.5rem; }
+    .form-control {
+      background: rgba(245,242,236,0.06) !important;
+      border: 1px solid rgba(245,242,236,0.12) !important;
+      border-radius: 4px !important;
+      color: var(--paper) !important;
+      padding: 0.85rem 1rem !important;
+      font-family: 'DM Sans', sans-serif !important;
+      font-size: 0.9rem !important;
+      transition: border-color 0.2s !important;
+    }
+    .form-control::placeholder { color: rgba(245,242,236,0.3) !important; }
+    .form-control:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px rgba(200,169,110,0.15) !important;
+      outline: none !important;
+    }
+    .btn-send {
+      width: 100%;
+      background: var(--accent);
+      color: var(--ink);
+      border: none;
+      padding: 1rem;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      margin-top: 0.5rem;
+    }
+    .btn-send:hover { background: #d4b87a; transform: translateY(-2px); }
+    .contact-info { margin-top: 2.5rem; }
+    .contact-info-item {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(245,242,236,0.08);
+      color: rgba(245,242,236,0.7);
+      font-size: 0.9rem;
+    }
+    .contact-info-item i { color: var(--accent); width: 1.2rem; }
+
+    /* ─── FOOTER ─────────────────────────────── */
+    footer {
+      background: #080808;
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: rgba(245,242,236,0.3);
+      letter-spacing: 0.06em;
+    }
+    footer span { color: var(--accent); }
+
+    /* ─── SCROLL REVEAL ───────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+      .hero-badge { width: 80px; height: 80px; bottom: -1rem; right: -0.5rem; }
+      .hero-badge .big { font-size: 1.2rem; }
+    }
+
+    /* ─── SCROLLBAR ───────────────────────────── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--paper); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">D<span>.</span>Studio</a>
+  <ul class="nav-links">
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#cases">Projets</a></li>
+    <li><a href="#contact" class="nav-cta">Me contacter</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-text">DESIGN</div>
+  <div class="container">
+    <div class="row align-items-center gy-5">
+      <div class="col-lg-7">
+        <div class="hero-label">Designer UI/UX & Développeur</div>
+        <h1 class="hero-title">
+          Je conçois des<br>
+          expériences<br>
+          <em>digitales</em> qui<br>
+          marquent.
+        </h1>
+        <p class="hero-desc">
+          Designer passionné, j'accompagne entreprises et entrepreneurs dans la création d'interfaces intuitives, modernes et centrées sur l'utilisateur.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="#cases" class="btn-primary-custom">
+            Voir mes projets <i class="fa-solid fa-arrow-right"></i>
+          </a>
+          <a href="#contact" class="btn-outline-custom">
+            Travailler ensemble
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-num">5<span>+</span></div>
+            <div class="stat-label">Années d'expérience</div>
+          </div>
+          <div>
+            <div class="stat-num">30<span>+</span></div>
+            <div class="stat-label">Projets livrés</div>
+          </div>
+          <div>
+            <div class="stat-num">98<span>%</span></div>
+            <div class="stat-label">Satisfaction client</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-visual">
+          <div class="hero-card-mockup">
+            <div class="mockup-header">
+              <div class="mockup-dot" style="background:#ff5f57"></div>
+              <div class="mockup-dot" style="background:#febc2e"></div>
+              <div class="mockup-dot" style="background:#28c840"></div>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-ui-bar accent"></div>
+              <div class="mockup-ui-bar" style="width:85%"></div>
+              <div class="mockup-ui-bar" style="width:70%"></div>
+              <div class="mockup-ui-bar" style="width:90%"></div>
+              <div class="mockup-ui-grid">
+                <div class="mockup-ui-card"><i class="fa-solid fa-pen-nib"></i></div>
+                <div class="mockup-ui-card"><i class="fa-solid fa-mobile-screen"></i></div>
+                <div class="mockup-ui-card"><i class="fa-solid fa-palette"></i></div>
+                <div class="mockup-ui-card"><i class="fa-solid fa-code"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-badge">
+            <div class="hero-badge-inner">
+              <div class="big">UI</div>
+              <div class="small">UX Design</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="row gy-5">
+      <div class="col-lg-5 reveal">
+        <div class="section-eyebrow">À propos</div>
+        <h2 class="section-title">Des idées<br>complexes en<br>interfaces <em>simples</em></h2>
+        <p class="section-subtitle">
+          Mon objectif est de transformer des visions en expériences digitales mémorables — élégantes, fonctionnelles et pensées pour les utilisateurs.
+        </p>
+      </div>
+      <div class="col-lg-7 reveal">
+        <div class="about-text">
+          <p>
+            Designer UI/UX passionné par la création d'expériences digitales intuitives et modernes. Depuis plusieurs années, j'accompagne des entreprises et des entrepreneurs dans la conception de solutions centrées sur l'utilisateur.
+          </p>
+          <p>
+            Mon approche combine rigueur analytique et sensibilité créative pour produire des interfaces qui ne se contentent pas d'être belles — elles fonctionnent.
+          </p>
+        </div>
+        <div class="process-steps">
+          <div class="process-step">
+            <div class="step-num">01</div>
+            <div>
+              <div class="step-title">Découverte & Analyse</div>
+              <div class="step-desc">Compréhension des besoins, objectifs et contraintes du projet.</div>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">02</div>
+            <div>
+              <div class="step-title">Recherche & Stratégie</div>
+              <div class="step-desc">Étude de marché, benchmarking et définition de la stratégie UX.</div>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">03</div>
+            <div>
+              <div class="step-title">Conception & Prototypage</div>
+              <div class="step-desc">Wireframes, maquettes et prototypes interactifs haute fidélité.</div>
+            </div>
+          </div>
+          <div class="process-step">
+            <div class="step-num">04</div>
+            <div>
+              <div class="step-title">Développement & Livraison</div>
+              <div class="step-desc">Production, tests utilisateurs et ajustements finaux.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-lg-6 reveal">
+        <div class="section-eyebrow">Services</div>
+        <h2 class="section-title" style="color:var(--paper)">Ce que je <em>fais</em><br>pour vous</h2>
+      </div>
+      <div class="col-lg-6 d-flex align-items-end reveal">
+        <p class="section-subtitle">
+          Un spectre complet de compétences pour couvrir tous vos besoins digitaux, de la conception à la mise en ligne.
+        </p>
+      </div>
+    </div>
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="service-card">
+          <div class="service-icon"><i class="fa-solid fa-pen-nib"></i></div>
+          <h5>Design UI/UX</h5>
+          <p>Interfaces élégantes et expériences utilisateur optimisées pour la conversion et l'engagement.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="service-card">
+          <div class="service-icon"><i class="fa-solid fa-code"></i></div>
+          <h5>Développement Web</h5>
+          <p>Intégration pixel-perfect et développement front-end performant, responsive et accessible.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="service-card">
+          <div class="service-icon"><i class="fa-solid fa-layer-group"></i></div>
+          <h5>Branding & Identité</h5>
+          <p>Logo, charte graphique et identité visuelle cohérente pour une marque mémorable.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="service-card">
+          <div class="service-icon"><i class="fa-solid fa-film"></i></div>
+          <h5>Motion Design</h5>
+          <p>Animations et micro-interactions qui donnent vie à vos interfaces et engagent vos utilisateurs.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="service-card">
+          <div class="service-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+          <h5>SEO & Stratégie</h5>
+          <p>Optimisation pour les moteurs de recherche et stratégie digitale orientée résultats.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4 reveal">
+        <div class="service-card">
+          <div class="service-icon"><i class="fa-solid fa-comments"></i></div>
+          <h5>Consulting Digital</h5>
+          <p>Conseil et accompagnement pour définir et exécuter votre stratégie de transformation digitale.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDIES -->
+<section id="cases">
+  <div class="container">
+    <div class="text-center mb-5 reveal">
+      <div class="section-eyebrow" style="justify-content:center">Études de cas</div>
+      <h2 class="section-title">Projets <em>sélectionnés</em></h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4 reveal">
+        <div class="case-card">
+          <div class="case-visual case-v1">🛒</div>
+          <div class="case-body">
+            <span class="case-tag">E-commerce · UI/UX</span>
+            <h4>Refonte d'un site e-commerce</h4>
+            <p>Modernisation complète d'une boutique en ligne pour augmenter les ventes. Nouveau parcours utilisateur simplifié avec un design responsive optimisé conversion.</p>
+            <div class="case-results">
+              <span class="result-pill"><i class="fa-solid fa-arrow-up"></i> +35% de conversion</span>
+              <span class="result-pill"><i class="fa-solid fa-check"></i> UX améliorée</span>
+              <span class="result-pill"><i class="fa-solid fa-check"></i> Rebond réduit</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 reveal">
+        <div class="case-card">
+          <div class="case-visual case-v2">✦</div>
+          <div class="case-body">
+            <span class="case-tag">Branding · Identité visuelle</span>
+            <h4>Création d'une identité visuelle</h4>
+            <p>Élaboration d'une identité de marque forte pour une startup en phase de lancement. Logo, palette de couleurs et charte graphique complète.</p>
+            <div class="case-results">
+              <span class="result-pill"><i class="fa-solid fa-check"></i> Image pro</span>
+              <span class="result-pill"><i class="fa-solid fa-check"></i> Brand recognition</span>
+              <span class="result-pill"><i class="fa-solid fa-check"></i> Com cohérente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 reveal">
+        <div class="case-card">
+          <div class="case-visual case-v3">📱</div>
+          <div class="case-body">
+            <span class="case-tag">Mobile · UX Design</span>
+            <h4>Application de gestion des tâches</h4>
+            <p>Conception et développement d'une application mobile fluide pour simplifier la gestion quotidienne des tâches. UX optimisée pour la rapidité.</p>
+            <div class="case-results">
+              <span class="result-pill"><i class="fa-solid fa-star"></i> Excellents retours</span>
+              <span class="result-pill"><i class="fa-solid fa-arrow-up"></i> +Engagement</span>
+              <span class="result-pill"><i class="fa-solid fa-arrow-up"></i> +Rétention</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="row gy-5">
+      <div class="col-lg-5 reveal">
+        <div class="section-eyebrow">Contact</div>
+        <h2 class="section-title" style="color:var(--paper)">Démarrons votre <em>projet</em></h2>
+        <p class="section-subtitle">
+          Vous avez un projet en tête ? Discutons-en. Je réponds sous 24h.
+        </p>
+        <div class="contact-info">
+          <div class="contact-info-item">
+            <i class="fa-solid fa-envelope"></i>
+            <span>hello@dstudio.design</span>
+          </div>
+          <div class="contact-info-item">
+            <i class="fa-solid fa-phone"></i>
+            <span>+229 00 00 00 00</span>
+          </div>
+          <div class="contact-info-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>Cotonou, Bénin · Disponible à distance</span>
+          </div>
+        </div>
+        <div class="d-flex gap-3 mt-4">
+          <a href="#" style="color:var(--accent);font-size:1.2rem;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'"><i class="fa-brands fa-linkedin"></i></a>
+          <a href="#" style="color:var(--accent);font-size:1.2rem;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'"><i class="fa-brands fa-dribbble"></i></a>
+          <a href="#" style="color:var(--accent);font-size:1.2rem;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'"><i class="fa-brands fa-behance"></i></a>
+          <a href="#" style="color:var(--accent);font-size:1.2rem;transition:transform 0.2s" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='none'"><i class="fa-brands fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="col-lg-6 offset-lg-1 reveal">
+        <div class="contact-form-wrap">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label">Nom</label>
+              <input type="text" class="form-control" placeholder="Votre nom"/>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" placeholder="votre@email.com"/>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Sujet</label>
+              <input type="text" class="form-control" placeholder="Refonte de site, application mobile..."/>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Message</label>
+              <textarea class="form-control" rows="5" placeholder="Décrivez votre projet..."></textarea>
+            </div>
+            <div class="col-12">
+              <button class="btn-send" onclick="handleSend(this)">
+                <i class="fa-solid fa-paper-plane me-2"></i> Envoyer le message
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>&copy; 2026 <span>D.Studio</span> — Designer UI/UX & Développeur · Conçu avec soin</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ─── Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a, button, .service-card, .case-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.width = '18px'; cursor.style.height = '18px'; ring.style.width = '55px'; ring.style.height = '55px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width = '10px'; cursor.style.height = '10px'; ring.style.width = '38px'; ring.style.height = '38px'; });
+  });
+
+  // ─── Navbar scroll
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ─── Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => io.observe(r));
+
+  // ─── Counter animation
+  function animateCounter(el, target) {
+    let current = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) { current = target; clearInterval(timer); }
+      el.textContent = Math.round(current);
+    }, 20);
+  }
+  const statNums = document.querySelectorAll('.stat-num');
+  const targets = [5, 30, 98];
+  const statsObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        statNums.forEach((el, i) => {
+          const suffix = el.querySelector('span')?.textContent || '';
+          const numEl = document.createElement('span');
+          numEl.textContent = '0';
+          el.innerHTML = '';
+          el.appendChild(numEl);
+          const s = document.createElement('span');
+          s.textContent = suffix;
+          el.appendChild(s);
+          animateCounter(numEl, targets[i]);
+        });
+        statsObserver.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+  if (statNums.length) statsObserver.observe(statNums[0]);
+
+  // ─── Form send
+  function handleSend(btn) {
+    btn.innerHTML = '<i class="fa-solid fa-circle-check me-2"></i> Message envoyé !';
+    btn.style.background = '#2d8c4e';
+    setTimeout(() => {
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> Envoyer le message';
+      btn.style.background = '';
+    }, 3000);
+  }
+</script>
+</body>
+</html>
